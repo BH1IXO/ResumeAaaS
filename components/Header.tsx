@@ -1,10 +1,9 @@
+"use client"
+
 import Link from "next/link"
 import { UserButton } from "@clerk/nextjs"
-import { auth } from "@clerk/nextjs/server"
 
 export default function Header() {
-  const { userId } = auth()
-
   return (
     <header className="bg-white border-b border-gray-100 sticky top-0 z-10">
       <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -24,7 +23,7 @@ export default function Header() {
           >
             分析简历
           </Link>
-          {userId && <UserButton afterSignOutUrl="/" />}
+          <UserButton afterSignOutUrl="/" />
         </nav>
       </div>
     </header>
