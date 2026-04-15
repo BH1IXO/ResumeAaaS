@@ -4,6 +4,7 @@ import { useState } from "react"
 import Header from "@/components/Header"
 import ResumeForm from "@/components/ResumeForm"
 import AnalysisResult from "@/components/AnalysisResult"
+import RateLimitModal from "@/components/RateLimitModal"
 import type { AnalysisResult as AnalysisResultType } from "@/lib/ai"
 
 interface AnalysisResponse extends AnalysisResultType {
@@ -15,6 +16,7 @@ export default function AnalyzePage() {
   const [result, setResult] = useState<AnalysisResponse | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [showRateLimitModal, setShowRateLimitModal] = useState(false)
 
   async function handleSubmit(resumeText: string) {
     setLoading(true)
@@ -31,7 +33,11 @@ export default function AnalyzePage() {
       const data = await res.json()
 
       if (!res.ok) {
-        setError(data.error ?? "分析失败，请重试")
+        if (res.status === 429 && data.code === "RATE_LIMIT_EXCEEDED") {
+          setShowRateLimitModal(true)
+        } else {
+          setError(data.error ?? "分析失败，请重试")
+        }
         return
       }
 
@@ -79,6 +85,10 @@ export default function AnalyzePage() {
           </div>
         )}
       </main>
+
+      {showRateLimitModal && (
+        <RateLimitModal onClose={() => setShowRateLimitModal(false)} />
+      )}
     </div>
   )
 }

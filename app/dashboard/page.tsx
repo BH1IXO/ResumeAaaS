@@ -39,6 +39,11 @@ export default async function DashboardPage() {
             <p className="text-2xl font-bold text-gray-900">
               {user.plan === "FREE" ? "免费版" : "Pro 版"}
             </p>
+            {user.plan === "FREE" && (
+              <Link href="/upgrade" className="text-xs text-indigo-600 hover:underline mt-1 inline-block">
+                升级 Pro →
+              </Link>
+            )}
           </div>
           <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm">
             <p className="text-sm text-gray-500 mb-1">今日剩余次数</p>
@@ -70,14 +75,20 @@ export default async function DashboardPage() {
 
         {/* Free tier upgrade nudge */}
         {isFree && remaining === 0 && (
-          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8 flex items-center gap-4">
-            <span className="text-2xl">⚡</span>
-            <div>
-              <p className="font-semibold text-amber-800">今日次数已用完</p>
-              <p className="text-sm text-amber-600">
-                明日重置，或升级 Pro 版获取无限次使用
-              </p>
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-5 mb-8 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <span className="text-2xl">⚡</span>
+              <div>
+                <p className="font-semibold text-amber-800">今日次数已用完</p>
+                <p className="text-sm text-amber-600">明日重置，或升级 Pro 版获取无限次使用</p>
+              </div>
             </div>
+            <Link
+              href="/upgrade"
+              className="flex-shrink-0 text-sm bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-colors"
+            >
+              立即升级 →
+            </Link>
           </div>
         )}
 
@@ -94,9 +105,10 @@ export default async function DashboardPage() {
           ) : (
             <div className="space-y-3">
               {analyses.map((a) => (
-                <div
+                <Link
                   key={a.id}
-                  className="bg-white rounded-xl border border-gray-100 p-5 flex items-center gap-5 shadow-sm"
+                  href={`/analysis/${a.id}`}
+                  className="bg-white rounded-xl border border-gray-100 p-5 flex items-center gap-5 shadow-sm hover:border-indigo-200 hover:shadow-md transition-all"
                 >
                   <ScoreBadge score={a.score} />
                   <div className="flex-1 min-w-0">
@@ -107,7 +119,8 @@ export default async function DashboardPage() {
                       {new Date(a.createdAt).toLocaleString("zh-CN")}
                     </p>
                   </div>
-                </div>
+                  <span className="text-xs text-gray-300 flex-shrink-0">查看详情 →</span>
+                </Link>
               ))}
             </div>
           )}

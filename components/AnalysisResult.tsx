@@ -1,27 +1,80 @@
 "use client"
 
+import { useState } from "react"
 import type { AnalysisResult as AnalysisResultType } from "@/lib/ai"
 
 interface Props {
   result: AnalysisResultType & { id: string }
 }
 
+function buildCopyText(result: AnalysisResultType): string {
+  return `【简历评分】${result.score}分
+
+【优点】
+${result.strengths.map((s) => `• ${s}`).join("\n")}
+
+【不足】
+${result.weaknesses.map((s) => `• ${s}`).join("\n")}
+
+【改进建议】
+${result.suggestions.map((s, i) => `${i + 1}. ${s}`).join("\n")}
+${
+  result.revisedSummary
+    ? `\n【AI优化示范】\n${result.revisedSummary}`
+    : ""
+}`
+}
+
+function CopyButton({
+  text,
+  label = "复制",
+  className = "",
+}: {
+  text: string
+  label?: string
+  className?: string
+}) {
+  const [copied, setCopied] = useState(false)
+
+  async function handleCopy() {
+    await navigator.clipboard.writeText(text)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1500)
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      className={`text-xs px-3 py-1.5 rounded-lg transition-colors ${
+        copied
+          ? "bg-emerald-100 text-emerald-700"
+          : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+      } ${className}`}
+    >
+      {copied ? "已复制 ✓" : label}
+    </button>
+  )
+}
+
 export default function AnalysisResult({ result }: Props) {
   return (
     <div className="space-y-6">
       {/* Score */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex items-center gap-8">
-        <ScoreRing score={result.score} />
-        <div>
-          <h2 className="text-xl font-bold text-gray-900 mb-1">简历综合评分</h2>
-          <p className="text-sm text-gray-500">
-            {result.score >= 80
-              ? "优秀 — 简历质量很高，可以直接投递"
-              : result.score >= 60
-              ? "良好 — 有一些提升空间，建议优化后投递"
-              : "待改进 — 简历存在明显不足，建议按建议修改"}
-          </p>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 flex items-center justify-between gap-8">
+        <div className="flex items-center gap-8">
+          <ScoreRing score={result.score} />
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">简历综合评分</h2>
+            <p className="text-sm text-gray-500">
+              {result.score >= 80
+                ? "优秀 — 简历质量很高，可以直接投递"
+                : result.score >= 60
+                ? "良好 — 有一些提升空间，建议优化后投递"
+                : "待改进 — 简历存在明显不足，建议按建议修改"}
+            </p>
+          </div>
         </div>
+        <CopyButton text={buildCopyText(result)} label="复制全部结果" />
       </div>
 
       {/* Strengths & Weaknesses */}
@@ -60,7 +113,10 @@ export default function AnalysisResult({ result }: Props) {
       {/* Revised Summary */}
       {result.revisedSummary && (
         <div className="bg-indigo-50 rounded-2xl border border-indigo-100 p-6">
-          <h3 className="font-semibold text-indigo-900 mb-3">✍️ AI 优化示范（个人简介）</h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-indigo-900">✍️ AI 优化示范（个人简介）</h3>
+            <CopyButton text={result.revisedSummary} label="复制示范" />
+          </div>
           <p className="text-sm text-indigo-800 leading-relaxed whitespace-pre-wrap">
             {result.revisedSummary}
           </p>
@@ -107,20 +163,8 @@ function ScoreRing({ score }: { score: number }) {
 
   return (
     <div className="relative flex-shrink-0">
-      <svg
-        width="120"
-        height="120"
-        className="-rotate-90"
-        aria-hidden="true"
-      >
-        <circle
-          cx="60"
-          cy="60"
-          r={radius}
-          strokeWidth="8"
-          stroke="#f3f4f6"
-          fill="none"
-        />
+      <svg width="120" height="120" className="-rotate-90" aria-hidden="true">
+        <circle cx="60" cy="60" r={radius} strokeWidth="8" stroke="#f3f4f6" fill="none" />
         <circle
           cx="60"
           cy="60"
