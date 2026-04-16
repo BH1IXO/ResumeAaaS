@@ -51,12 +51,21 @@ export async function analyzeResume(resumeText: string): Promise<AnalysisResult>
 
 评分维度（各20%）：内容完整性、技能描述质量、成就量化程度、专业表达、格式规范。
 
+评分参照：
+- 90-100：五个维度均优秀，有具体数据支撑，表达专业，几乎无改进空间
+- 75-89：大部分维度良好，有少量不足，需小幅优化
+- 60-74：内容基本完整但缺乏亮点，成就未量化，表达平淡
+- 40-59：多个维度明显不足，内容空洞或格式混乱
+- 0-39：严重缺失关键信息，或内容质量极差
+
+请严格按简历实际质量打分，不要集中在80-90区间，差的简历应给出40-60分。
+
 简历内容：
 ${resumeText}`,
         },
       ],
       response_format: { type: "json_object" },
-      temperature: 0.3,
+      temperature: 0.7,
       max_tokens: 2000,
     }),
     signal: AbortSignal.timeout(30000),
