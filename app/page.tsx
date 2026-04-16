@@ -148,12 +148,12 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <button
-                disabled
-                className="block w-full text-center bg-white/20 text-white py-3 rounded-xl font-medium cursor-not-allowed opacity-70"
+              <Link
+                href="/upgrade"
+                className="block w-full text-center bg-white/20 text-white py-3 rounded-xl font-medium hover:bg-white/30 transition-colors"
               >
-                即将开放
-              </button>
+                立即升级
+              </Link>
             </div>
           </div>
         </div>
